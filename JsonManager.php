@@ -39,11 +39,13 @@ class JsonManager implements \IteratorAggregate {
 		if (isset($jsonString) && !is_array($jsonString)) {
 			// http://stackoverflow.com/questions/11267769/is-there-a-php-5-3-bug-concerning-json-decode-returning-null-on-valid-json-strin
 			$items = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $jsonString), true);
-		} else if (is_array($jsonString)) {
+		} else if (!empty($jsonString) && is_array($jsonString)) {
 			$items = $jsonString;
-		} else {
+		}
+		if (empty($items)) {
 			$items = array();
 		}
+
 		if ($collection) {
 			$this->makeCollection($items, $keyName);
 		} else {
