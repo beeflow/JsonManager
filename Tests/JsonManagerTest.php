@@ -90,6 +90,17 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
+	public function createEmptyCollection() {
+		$json = new JsonManager(null, true);
+		$arr = $json->get();
+
+		$this->assertTrue(is_array($arr));
+		$this->assertTrue(empty($arr));
+	}
+
+	/**
+	 * @test
+	 */
 	public function addNewRootField() {
 		$jsonData = '{"id": 11111, "field": "field_name", "value": "new value"}';
 		$json = new JsonManager($jsonData);
@@ -187,6 +198,84 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 		$given = (string) $json;
 
 		$this->assertEquals($expected, $given);
+	}
+
+	/**
+	 * @test
+	 */
+	public function checkSize() {
+		$arData = array(
+			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
+			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
+			array('id' => '3', 'field' => 'field name 3', 'value' => 'value 3')
+		);
+		$json = new JsonManager($arData);
+		$this->assertEquals(3, $json->length());
+	}
+
+	/**
+	 * @test
+	 */
+	public function keyExists() {
+		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
+		$json = new JsonManager($jsonData);
+		$this->assertTrue($json->exists('fields'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function keyNotExists() {
+		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
+		$json = new JsonManager($jsonData);
+		$this->assertFalse($json->exists('field_name'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function createCollectionWithIncorrectData() {
+		$arData = array(
+			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
+			array('field' => 'field name 2', 'value' => 'value 2'),
+			array('id' => '3', 'field' => 'field name 3', 'value' => 'value 3')
+		);
+		$json = new JsonManager($arData, true);
+		$this->assertEquals(3, $json->length());
+		$this->assertTrue(empty($json->get(2)->get('id')));
+		$this->assertTrue(!empty($json->get(1)->get('id')));
+	}
+
+	/**
+	 * @test
+	 */
+	public function listAllWithNeededKeys() {
+		$arData = array(
+			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
+			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
+			array('id' => '3', 'field' => 'field name 3', 'value' => 'value 3')
+		);
+		$json = new JsonManager($arData, true);
+		$expected = array(
+			1 => array('field' => 'field name 1'),
+			2 => array('field' => 'field name 2'),
+			3 => array('field' => 'field name 3')
+		);
+		$this->assertEquals($expected, $json->listAll(array('field')));
+	}
+
+	/**
+	 * @test
+	 */
+	public function listAll() {
+		$arData = array(
+			1 => array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
+			2 => array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
+			3 => array('id' => '3', 'field' => 'field name 3', 'value' => 'value 3')
+		);
+		$json = new JsonManager($arData, true);
+
+		$this->assertEquals($arData, $json->listAll());
 	}
 
 }

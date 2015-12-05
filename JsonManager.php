@@ -29,7 +29,7 @@ class JsonManager implements \IteratorAggregate {
 	 *
 	 * @var array 
 	 */
-	private $item;
+	private $item = array();
 
 	/**
 	 * @param String $jsonString may be NULL
