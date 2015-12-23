@@ -21,7 +21,6 @@ require_once 'JsonIterator.php';
  * Description of JsonManager
  *
  * @author Rafal Przetakowski <rafal.p@beeflow.co.uk>
- * @copyright (c) 2015 Beeflow Ltd
  */
 class JsonManager implements \IteratorAggregate {
 
