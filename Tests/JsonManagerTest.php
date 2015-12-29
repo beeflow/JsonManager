@@ -23,22 +23,26 @@ require_once 'JsonManager.php';
  * @author Rafal Przetakowski <rafal.p@beeflow.co.uk>
  * @copyright (c) 2015 Beeflow Ltd
  */
-class JsonManagerTest extends \PHPUnit_Framework_TestCase {
+class JsonManagerTest extends \PHPUnit_Framework_TestCase
+{
 
 	/**
 	 * @test
 	 */
-	public function createFromJson() {
+	public function createFromJson()
+	{
 		$jsonData = '{"id": 11111, "field": "field_name", "value": "new value"}';
 		$json = new JsonManager($jsonData);
+		$given = $json->get();
 
-		$this->assertArrayHasKey('field', $json->get());
+		$this->assertArrayHasKey('field', $given);
 	}
 
 	/**
 	 * @test
 	 */
-	public function createNull() {
+	public function createNull()
+	{
 		$json = new JsonManager();
 
 		$this->assertTrue($json instanceof JsonManager);
@@ -47,7 +51,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function createFromIncorrectJson() {
+	public function createFromIncorrectJson()
+	{
 		$incorectJsonData = '{"id": 11111, "field": "field_name"; "value": "new value"}';
 		$json = new JsonManager($incorectJsonData);
 		$arr = $json->get();
@@ -59,7 +64,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function getArrayFromNullCreated() {
+	public function getArrayFromNullCreated()
+	{
 		$json = new JsonManager();
 		$arr = $json->get();
 
@@ -70,27 +76,32 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function getUnexistsKeyValue() {
+	public function getUnexistsKeyValue()
+	{
 		$arData = array('id' => '1111', 'field' => 'field_name', 'value' => 'some value');
 		$json = new JsonManager($arData);
+		$given = $json->get('unknown');
 
-		$this->assertTrue(empty($json->get('unknown')));
+		$this->assertTrue(empty($given));
 	}
 
 	/**
 	 * @test
 	 */
-	public function createFromArray() {
+	public function createFromArray()
+	{
 		$arData = array('id' => '1111', 'field' => 'field_name', 'value' => 'some value');
 		$json = new JsonManager($arData);
+		$given = $json->get();
 
-		$this->assertArrayHasKey('field', $json->get());
+		$this->assertArrayHasKey('field', $given);
 	}
 
 	/**
 	 * @test
 	 */
-	public function createEmptyCollection() {
+	public function createEmptyCollection()
+	{
 		$json = new JsonManager(null, true);
 		$arr = $json->get();
 
@@ -101,17 +112,21 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function addNewRootField() {
+	public function addNewRootField()
+	{
 		$jsonData = '{"id": 11111, "field": "field_name", "value": "new value"}';
 		$json = new JsonManager($jsonData);
 		$json->add('addNewRootField', 'new value');
-		$this->assertArrayHasKey('addNewRootField', $json->get());
+		$given = $json->get();
+
+		$this->assertArrayHasKey('addNewRootField', $given);
 	}
 
 	/**
 	 * @test
 	 */
-	public function addNewNotRootField() {
+	public function addNewNotRootField()
+	{
 		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
 		$json = new JsonManager($jsonData);
 		$json->add('fields/new_field', 'new value');
@@ -122,7 +137,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function getNewJsonData() {
+	public function getNewJsonData()
+	{
 		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
 		$json = new JsonManager($jsonData);
 		$newJson = $json->get('fields');
@@ -133,7 +149,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function getNotRootField() {
+	public function getNotRootField()
+	{
 		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
 		$json = new JsonManager($jsonData);
 		$id = $json->get('fields')->get('id');
@@ -144,31 +161,37 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function setNewValueOfExistingKey() {
+	public function setNewValueOfExistingKey()
+	{
 		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
 		$json = new JsonManager($jsonData);
 		$json->set('fields/value', 'new value of field');
+		$given = $json->get('fields')->get('value');
 
-		$this->assertEquals('new value of field', $json->get('fields')->get('value'));
+		$this->assertEquals('new value of field', $given);
 	}
 
 	/**
 	 * @test
 	 */
-	public function getZeroKeyValue() {
+	public function getZeroKeyValue()
+	{
 		$arData = array(
 			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
 			array('id' => '3', 'field' => 'field name 3', 'value' => 'value 3')
 		);
 		$json = new JsonManager($arData);
-		$this->assertEquals('field name 1', $json->get(0)->get('field'));
+		$given = $json->get(0)->get('field');
+
+		$this->assertEquals('field name 1', $given);
 	}
 
 	/**
 	 * @test
 	 */
-	public function iterateData() {
+	public function iterateData()
+	{
 		$arData = array(
 			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
@@ -187,7 +210,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function getAsJsonString() {
+	public function getAsJsonString()
+	{
 		$arData = array(
 			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
@@ -203,7 +227,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function checkSize() {
+	public function checkSize()
+	{
 		$arData = array(
 			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
@@ -216,7 +241,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function keyExists() {
+	public function keyExists()
+	{
 		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
 		$json = new JsonManager($jsonData);
 		$this->assertTrue($json->exists('fields'));
@@ -225,31 +251,40 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function keyNotExists() {
+	public function keyNotExists()
+	{
 		$jsonData = '{"fields": {"id": 11111, "field": "field_name", "value": "new value"}}';
 		$json = new JsonManager($jsonData);
-		$this->assertFalse($json->exists('field_name'));
+		$given = $json->exists('field_name');
+
+		$this->assertFalse($given);
 	}
 
 	/**
 	 * @test
 	 */
-	public function createCollectionWithIncorrectData() {
+	public function createCollectionWithIncorrectData()
+	{
 		$arData = array(
 			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			array('field' => 'field name 2', 'value' => 'value 2'),
 			array('id' => '3', 'field' => 'field name 3', 'value' => 'value 3')
 		);
 		$json = new JsonManager($arData, true);
-		$this->assertEquals(3, $json->length());
-		$this->assertTrue(empty($json->get(2)->get('id')));
-		$this->assertTrue(!empty($json->get(1)->get('id')));
+		$jsonLength = $json->length();
+		$secondId = $json->get(2)->get('id');
+		$firstId = $json->get(1)->get('id');
+
+		$this->assertEquals(3, $jsonLength);
+		$this->assertTrue(empty($secondId));
+		$this->assertTrue(!empty($firstId));
 	}
 
 	/**
 	 * @test
 	 */
-	public function listAllWithNeededKeys() {
+	public function listAllWithNeededKeys()
+	{
 		$arData = array(
 			array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
@@ -267,7 +302,8 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function listAll() {
+	public function listAll()
+	{
 		$arData = array(
 			1 => array('id' => '1', 'field' => 'field name 1', 'value' => 'value 1'),
 			2 => array('id' => '2', 'field' => 'field name 2', 'value' => 'value 2'),
