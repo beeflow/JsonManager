@@ -20,7 +20,6 @@
  * Description of JsonIterator
  *
  * @author Rafal Przetakowski <rafal.p@beeflow.co.uk>
- * @copyright (c) 2015 Beeflow Ltd
  */
 class JsonIterator implements \Iterator {
 

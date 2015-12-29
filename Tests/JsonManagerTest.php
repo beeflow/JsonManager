@@ -21,7 +21,6 @@ require_once 'JsonManager.php';
  * Description of JsonManagerTest
  *
  * @author Rafal Przetakowski <rafal.p@beeflow.co.uk>
- * @copyright (c) 2015 Beeflow Ltd
  */
 class JsonManagerTest extends \PHPUnit_Framework_TestCase
 {
