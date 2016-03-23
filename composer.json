@@ -1,0 +1,9 @@
+{
+    "name": "beeflow/JsonManager",
+    "version": "1.0.0",
+    "license": "GPL",
+    "description": "The \"Symfony\" Ajax bundle",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
