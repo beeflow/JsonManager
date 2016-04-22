@@ -37,8 +37,7 @@ class JsonManager implements \IteratorAggregate {
 	public function __construct($inJsonString = null, $collection = false, $keyName = 'id') {
 		$jsonString = str_replace('\"', '"', $inJsonString);
 		if (isset($jsonString) && !is_array($jsonString)) {
-			// http://stackoverflow.com/questions/11267769/is-there-a-php-5-3-bug-concerning-json-decode-returning-null-on-valid-json-strin
-			$items = json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $jsonString), true);
+			$items = json_decode($jsonString, true);
 		} else if (!empty($jsonString) && is_array($jsonString)) {
 			$items = $jsonString;
 		}
