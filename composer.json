@@ -1,6 +1,5 @@
 {
     "name": "beeflow/jsonmanager",
-    "version": "1.0.0",
     "license": "GPL",
     "description": "Json Manager Util",
     "keywords": ["json"],
@@ -20,5 +19,10 @@
     },
     "autoload": {
         "psr-4": { "Beeflow\\JsonManager\\": "" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     }
 }
