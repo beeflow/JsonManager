@@ -16,6 +16,7 @@
  * for more details.
  */
 namespace Beeflow\JsonManager;
+
 use Beeflow\JsonManager\JsonIterator;
 
 /**
@@ -23,144 +24,196 @@ use Beeflow\JsonManager\JsonIterator;
  *
  * @author Rafal Przetakowski <rafal.p@beeflow.co.uk>
  */
-class JsonManager implements \IteratorAggregate {
+class JsonManager implements \IteratorAggregate
+{
 
-	/**
-	 *
-	 * @var array 
-	 */
-	private $item = array();
+    /**
+     *
+     * @var array
+     */
+    private $item = array();
 
-	/**
-	 * @param String $jsonString may be NULL
-	 */
-	public function __construct($inJsonString = null, $collection = false, $keyName = 'id') {
-		$jsonString = str_replace('\"', '"', $inJsonString);
-		if (isset($jsonString) && !is_array($jsonString)) {
-			$items = json_decode($jsonString, true);
-		} else if (!empty($jsonString) && is_array($jsonString)) {
-			$items = $jsonString;
-		}
-		if (empty($items)) {
-			$items = array();
-		}
+    /**
+     * JsonManager constructor.
+     *
+     * @param Mixed|null $inJsonString
+     * @param bool       $collection
+     * @param string     $keyName
+     */
+    public function __construct($inJsonString = null, $collection = false, $keyName = 'id')
+    {
+        if (is_string($inJsonString)) {
+            $jsonString = str_replace('\"', '"', $inJsonString);
+        } else if (is_object($inJsonString)) {
+            $jsonString = $this->parseObject($inJsonString);
+        } else {
+            $jsonString = $inJsonString;
+        }
 
-		if ($collection) {
-			$this->makeCollection($items, $keyName);
-		} else {
-			$this->item = $items;
-		}
-	}
+        if (isset($jsonString) && !is_array($jsonString)) {
+            $items = json_decode($jsonString, true);
+        } else if (!empty($jsonString) && is_array($jsonString)) {
+            $items = $jsonString;
+        }
+        if (empty($items)) {
+            $items = array();
+        }
 
-	/**
-	 * @param String $path with value name
-	 * @param Mixed $value
-	 */
-	public function set($path, $value) {
-		$pathElements = explode('/', $path);
-		$array = &$this->item;
-		foreach ($pathElements as $key) {
-			$array = &$array[$key];
-		}
-		$array = $value;
-		unset($array);
-	}
+        if ($collection) {
+            $this->makeCollection($items, $keyName);
+        } else {
+            $this->item = $items;
+        }
+    }
 
-	/**
-	 * @param String $path with value name
-	 * @param Mixed $value
-	 */
-	public function add($path, $value) {
-		$this->set($path, $value);
-	}
+    /**
+     * @param SomeObject $inObject
+     *
+     * @return array
+     */
+    private function parseObject($inObject)
+    {
+        $reflection = new \ReflectionClass(get_class($inObject));
+        $properties = $reflection->getProperties();
+        $arData = array();
+        foreach ($properties as $property) {
+            $property->setAccessible(true);
+            $key = $property->getName();
+            $arData[ $key ] = $property->getValue($inObject);
+        }
 
-	/**
-	 * 
-	 * @param String $fieldName
-	 * @return Mixed
-	 */
-	public function get($fieldName = null) {
-		if (!isset($fieldName) || $fieldName === false) {
-			return $this->item;
-		}
-		if (isset($this->item[$fieldName]) && is_array($this->item[$fieldName])) {
-			return new JsonManager($this->item[$fieldName]);
-		}
-		if (isset($this->item[$fieldName])) {
-			return $this->item[$fieldName];
-		}
-		return NULL;
-	}
+        return $arData;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString() {
-		return json_encode($this->item);
-	}
+    /**
+     * @param String $path with value name
+     * @param Mixed  $value
+     */
+    public function set($path, $value)
+    {
+        $pathElements = explode('/', $path);
+        $array = &$this->item;
+        foreach ($pathElements as $key) {
+            $array = &$array[ $key ];
+        }
+        $array = $value;
+        unset($array);
+    }
 
-	/**
-	 *
-	 * @return array
-	 */
-	public function keys() {
-		return array_keys($this->item);
-	}
+    /**
+     * @param String $path with value name
+     * @param Mixed  $value
+     */
+    public function add($path, $value)
+    {
+        $this->set($path, $value);
+    }
 
-	/**
-	 *
-	 * @return integer
-	 */
-	public function length() {
-		return sizeof($this->item);
-	}
+    /**
+     *
+     * @param String $fieldName
+     *
+     * @return Mixed
+     */
+    public function get($fieldName = null)
+    {
+        if (!isset($fieldName) || $fieldName === false) {
+            return $this->item;
+        }
+        if (isset($this->item[ $fieldName ]) && is_array($this->item[ $fieldName ])) {
+            return new JsonManager($this->item[ $fieldName ]);
+        }
+        if (isset($this->item[ $fieldName ])) {
+            return $this->item[ $fieldName ];
+        }
 
-	/**
-	 * 
-	 * @param array() $neededKeys
-	 * @return array()
-	 */
-	public function listAll($neededKeys = array()) {
-		$results = array();
-		foreach ($this->item as $name => $object) {
-			foreach ($object as $key => $value) {
-				if (empty($neededKeys) || in_array($key, $neededKeys)) {
-					$results[$name][$key] = $value;
-				}
-			}
-		}
-		return $results;
-	}
+        return NULL;
+    }
 
-	/**
-	 *
-	 * @param string/integer $key
-	 * @return boolean
-	 */
-	public function exists($key) {
-		return (isset($this->item[$key]));
-	}
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return json_encode($this->item);
+    }
 
-	/**
-	 * 
-	 * @return Jsoniterator
-	 */
-	public function getIterator() {
-		return new JsonIterator($this);
-	}
+    /**
+     *
+     * @return array
+     */
+    public function keys()
+    {
+        return array_keys($this->item);
+    }
 
-	private function makeCollection($items, $keyName) {
-		if (empty($items)) {
-			$this->item = array();
-			return;
-		}
-		foreach ($items as $item) {
-			if (!empty($keyName) && array_key_exists($keyName, $item)) {
-				$this->item[$item[$keyName]] = new JsonManager($item);
-			} else {
-				$this->item[] = new JsonManager($item);
-			}
-		}
-	}
+    /**
+     *
+     * @return integer
+     */
+    public function length()
+    {
+        return sizeof($this->item);
+    }
+
+    /**
+     *
+     * @param array() $neededKeys
+     *
+     * @return array()
+     */
+    public function listAll($neededKeys = array())
+    {
+        $results = array();
+        foreach ($this->item as $name => $object) {
+            foreach ($object as $key => $value) {
+                if (empty($neededKeys) || in_array($key, $neededKeys)) {
+                    $results[ $name ][ $key ] = $value;
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     *
+     * @param string /integer $key
+     *
+     * @return boolean
+     */
+    public function exists($key)
+    {
+        return (isset($this->item[ $key ]));
+    }
+
+    /**
+     *
+     * @return Jsoniterator
+     */
+    public function getIterator()
+    {
+        return new JsonIterator($this);
+    }
+
+    /**
+     * @param $items
+     * @param $keyName
+     */
+    private function makeCollection($items, $keyName)
+    {
+        if (empty($items)) {
+            $this->item = array();
+
+            return;
+        }
+        foreach ($items as $item) {
+            if (!empty($keyName) && array_key_exists($keyName, $item)) {
+                $this->item[ $item[ $keyName ] ] = new JsonManager($item);
+            } else {
+                $this->item[] = new JsonManager($item);
+            }
+        }
+    }
 
 }

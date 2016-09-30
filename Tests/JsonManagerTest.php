@@ -17,6 +17,7 @@
  */
 namespace Beeflow\JsonManager\Tests;
 use Beeflow\JsonManager\JsonManager;
+use Beeflow\JsonManager\Tests\Mock\SomeClass;
 
 /**
  * Description of JsonManagerTest
@@ -314,4 +315,14 @@ class JsonManagerTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($arData, $json->listAll());
 	}
 
+    /**
+     * @test
+     */
+	public function parseObject()
+    {
+        $someObject = new SomeClass();
+        $json = new JsonManager($someObject);
+
+        $this->assertEquals('four', $json->get('four'));
+    }
 }
