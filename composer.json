@@ -1,6 +1,6 @@
 {
   "name": "beeflow/jsonmanager",
-  "license": "GPL",
+  "license": "LGPL-3.0-or-later",
   "description": "Json Manager Util",
   "keywords": [
     "json"
