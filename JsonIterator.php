@@ -26,7 +26,7 @@ namespace Beeflow\JsonManager;
 class JsonIterator implements \Iterator {
 
 	/**
-	 * @var Collection
+	 * @var JsonManager
 	 */
 	private $collection;
 
@@ -42,7 +42,7 @@ class JsonIterator implements \Iterator {
 
 	/**
 	 *
-	 * @param Collection $collection
+	 * @param JsonManager $collection
 	 */
 	public function __construct(JsonManager $collection) {
 		$this->collection = $collection;
@@ -51,7 +51,7 @@ class JsonIterator implements \Iterator {
 
 	/**
 	 * @return object
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function current() {
 		return $this->collection->get($this->keys[$this->currentIndex]);

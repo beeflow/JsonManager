@@ -15,6 +15,7 @@
  * PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+
 namespace Beeflow\JsonManager;
 
 use Beeflow\JsonManager\JsonIterator;
@@ -31,7 +32,7 @@ class JsonManager implements \IteratorAggregate
      *
      * @var array
      */
-    private $item = array();
+    private $item = [];
 
     /**
      * JsonManager constructor.
@@ -39,6 +40,8 @@ class JsonManager implements \IteratorAggregate
      * @param Mixed|null $inJsonString
      * @param bool       $collection
      * @param string     $keyName
+     *
+     * @throws \ReflectionException
      */
     public function __construct($inJsonString = null, $collection = false, $keyName = 'id')
     {
@@ -56,7 +59,7 @@ class JsonManager implements \IteratorAggregate
             $items = $jsonString;
         }
         if (empty($items)) {
-            $items = array();
+            $items = [];
         }
 
         if ($collection) {
@@ -67,15 +70,16 @@ class JsonManager implements \IteratorAggregate
     }
 
     /**
-     * @param SomeObject $inObject
+     * @param  $inObject
      *
      * @return array
+     * @throws \ReflectionException
      */
     private function parseObject($inObject)
     {
         $reflection = new \ReflectionClass(get_class($inObject));
         $properties = $reflection->getProperties();
-        $arData = array();
+        $arData = [];
         foreach ($properties as $property) {
             $property->setAccessible(true);
             $key = $property->getName();
@@ -114,6 +118,7 @@ class JsonManager implements \IteratorAggregate
      * @param String $fieldName
      *
      * @return Mixed
+     * @throws \ReflectionException
      */
     public function get($fieldName = null)
     {
@@ -162,9 +167,9 @@ class JsonManager implements \IteratorAggregate
      *
      * @return array()
      */
-    public function listAll($neededKeys = array())
+    public function listAll($neededKeys = [])
     {
-        $results = array();
+        $results = [];
         foreach ($this->item as $name => $object) {
             foreach ($object as $key => $value) {
                 if (empty($neededKeys) || in_array($key, $neededKeys)) {
@@ -199,11 +204,13 @@ class JsonManager implements \IteratorAggregate
     /**
      * @param $items
      * @param $keyName
+     *
+     * @throws \ReflectionException
      */
     private function makeCollection($items, $keyName)
     {
         if (empty($items)) {
-            $this->item = array();
+            $this->item = [];
 
             return;
         }
